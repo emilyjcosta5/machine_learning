@@ -116,9 +116,9 @@ def plot_samples(samples_path, save_path='samples_scatterplot.pdf'):
     x_3 = samples_3['x'].tolist()
     y_3 = samples_3['y'].tolist()
     z_3 = samples_3['z'].tolist()
-    ax.scatter3D(x_1, y_1, z_1, label='1', marker='o')
-    ax.scatter3D(x_2, y_2, z_2, label='2', marker='^')
-    ax.scatter3D(x_3, y_3, z_3, label='3', marker='s')
+    ax.scatter3D(x_1, y_1, z_1, label='1', marker='o', alpha=0.2)
+    ax.scatter3D(x_2, y_2, z_2, label='2', marker='^', alpha=0.2)
+    ax.scatter3D(x_3, y_3, z_3, label='3', marker='s', alpha=0.2)
     ax.set_title("Samples from Multivariate Gaussian Distributions")
     ax.set_xlabel('1st Dimension, x')
     ax.set_ylabel('2nd Dimension, y')
@@ -127,6 +127,26 @@ def plot_samples(samples_path, save_path='samples_scatterplot.pdf'):
     plt.savefig(save_path)
     plt.clf()
     return None
+
+def risk(samples, i , x , p, loss_matrix=[[1,0,0],[0,1,0],[0,0,1]]):
+    '''
+    Parameters
+    ----------
+    samples: pandas.DataFrame
+    i: int
+        The true class assigned to i
+    x: 
+    p: float32
+        The class prior
+    loss_matrix: array, optional
+
+    '''
+    risk = 0
+    for idx, row in range (0, C):
+        if(i==idx):
+            continue
+        risk = risk + loss_matrix[i,idx]*p[idx]
+return t o t a l
 
 if __name__=='__main__':
     # Class 1
