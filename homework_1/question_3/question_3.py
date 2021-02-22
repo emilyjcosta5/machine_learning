@@ -9,6 +9,7 @@ from scipy.stats import multivariate_normal
 import matplotlib.patches as mpatches
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+import string
 
 def estimate_cov_mu(data):
     '''
@@ -75,7 +76,7 @@ def plot_subset(data, subset=['x','y','z']):
     plt.clf()
     return None
 
-def make_decisions(data, data_info, loss_matrix=None, true_class_label='True Class Label'):
+def make_decisions(data, data_info, loss_matrix=None):
     '''
     Implement classifier and check if correct given the true 
     data dsitribution knowledge. Chooses minimum risk.
@@ -107,17 +108,23 @@ def make_decisions(data, data_info, loss_matrix=None, true_class_label='True Cla
                     loss_matrix[i][j] = 0
                 else:
                     loss_matrix[i][j] = 1
+    print(loss_matrix)
     labels_reference  = {i:class_labels[i] for i in range(0,len(class_labels))}
     for idx, row in data.iterrows():
         # Modify class label for computation
         distribution = int(row.name)
         rows         = [row[dimension_label] for dimension_label in dimension_labels]
+        #print(rows)
+        #print(class_labels)
         args         = [risk(class_label-1, rows, loss_matrix, data_info) for class_label in class_labels]
         choice = labels_reference[np.argmin(args)]
         choices.append(choice)
+        print('Choice: %d'%choice)
+        print('Correct: %d'%distribution)
         # Check if classification was correct or not
         if(choice==distribution):
             correct.append(True)
+            print('Correct!: %d'%len(correct))
         else:
             correct.append(False)
     data['ERM Classification'] = choices
@@ -142,12 +149,14 @@ def risk(i , x , loss_matrix, data_info):
     for j, row in data_info.iterrows():
         #  Probability, mu, sigma^2
         try:
+            #print(x)
             risk = risk + loss_matrix[i][int(row['True Class Label'])-1]*row['Class Prior']*multivariate_normal.pdf(x,row['Mean Vector'],row['Covariance Matrix'])
+            #print(risk)
         except np.linalg.LinAlgError:
             continue
     return risk
 
-def plot_decision_matrix(data, save_path='./decision_matrix.pdf', true_class_label='True Class Label'):
+def plot_decision_matrix(data, save_path='./decision_matrix.pdf'):
     '''
     Plots a heatmap of the decision matrix along with the values.
     Parameters
@@ -218,23 +227,97 @@ def plot_correct_classified(data, subset=['x','y','z']):
     green_patch = mpatches.Patch(color='green', label='Correct')
     red_patch = mpatches.Patch(color='red', label='Incorrect')
     ax.legend(handles=[green_patch, red_patch], loc='upper left', title='Classification')
-    plt.savefig('./%s_%s_%s_true_class_classified.pdf'%(subset[0], subset[1], subset[2]))
+    plt.savefig('./%s_%s_%s_true_class_classified_loss2.pdf'%(subset[0], subset[1], subset[2]))
     plt.clf()
     return None
 
+def write_sample_data(samples, save_path):
+    '''
+    Saves the sample data.
+
+    Parameters
+    ----------
+    samples: numpy.array
+        The generated sample data
+    save_path: string
+        File name and path to save the sample data
+
+    Returns
+    -------
+    None
+    '''
+    samples.to_csv(save_path)
+
+def read_sample_data(save_path):
+    '''
+    Read the sample data. Helper function to read data in other functions.
+
+    Parameters
+    ----------
+    save_path: string
+        File containing the sample data
+
+    Returns
+    -------
+    samples: pandas.DataFrame
+        The generated sample data
+    '''
+    samples = pd.read_csv(save_path, index_col=0)
+    return samples
+
 if __name__=='__main__':
+    '''
     # Dimensions: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide,	total sulfur dioxide, density, pH, sulphates, alcohol
     wine_path = '/home/emily/Documents/intro_ml/homework_1/question_3/winequality-white.csv'
     wine_df = pd.read_csv(wine_path, delimiter=';', index_col='quality')
     print(wine_df)
     data_info = estimate_cov_mu(data=wine_df)
     print(data_info)
+    wine_loss_matrix = [[0, 15,  20, 25, 30, 35, 40, 45, 50],
+                        [15, 0,  10, 15, 20, 25, 30, 35, 40],
+                        [20, 10, 0,  5,  10, 15, 20, 25, 30],
+                        [25, 15, 5,  0,  1,  5,  10, 15, 20],
+                        [30, 20, 10, 1,  0,  1,  1,  5,  10],
+                        [35, 25, 15, 5,  1,  0,  10, 15, 20],
+                        [40, 30, 20, 10, 1,  10, 0,  25, 30],
+                        [45, 35, 25, 15, 5,  15, 25, 0,  40],
+                        [50, 40, 30, 20, 10, 20, 30, 40, 0 ]]
     # alcohol, pH, residual sugar
-    #plot_subset(data=wine_df, subset=['alcohol', 'pH', 'residual sugar'])
+    plot_subset(data=wine_df, subset=['alcohol', 'pH', 'residual sugar'])
     # citric acid, total sulfer dioxide, density
-    #plot_subset(data=wine_df, subset=['citric acid', 'total sulfur dioxide', 'density'])
-    wine_df = make_decisions(data=wine_df, data_info=data_info, loss_matrix=None, true_class_label='quality')
-    print(wine_df)
+    plot_subset(data=wine_df, subset=['citric acid', 'total sulfur dioxide', 'density'])
+    wine_df = make_decisions(data=wine_df, data_info=data_info, loss_matrix=wine_loss_matrix, true_class_label='quality')
+    #print(wine_df)
     plot_correct_classified(data=wine_df, subset=['alcohol', 'pH', 'residual sugar'])
     plot_correct_classified(data=wine_df, subset=['citric acid', 'total sulfur dioxide', 'density'])
-    plot_decision_matrix(data=wine_df, save_path='./wine_decision_matrix.pdf', true_class_label='quality')
+    plot_decision_matrix(data=wine_df, save_path='./wine_decision_matrix_loss2.pdf', true_class_label='quality')
+    '''
+
+    x_test = '/home/emily/Documents/intro_ml/homework_1/question_3/UCI HAR Dataset/UCI HAR Dataset/test/X_test.txt'
+    y_test = '/home/emily/Documents/intro_ml/homework_1/question_3/UCI HAR Dataset/UCI HAR Dataset/test/y_test.txt'
+    x_train = '/home/emily/Documents/intro_ml/homework_1/question_3/UCI HAR Dataset/UCI HAR Dataset/train/X_train.txt'
+    y_train = '/home/emily/Documents/intro_ml/homework_1/question_3/UCI HAR Dataset/UCI HAR Dataset/train/y_train.txt'
+    letters = []
+    for letter_a in string.ascii_letters:
+        for letter_b in string.ascii_letters[:11]:
+            letters.append(letter_a+letter_b)
+    letters = letters[:561]
+    test_id = pd.read_csv(y_test, names=['Index'])
+    test_df = pd.read_csv(x_test, delim_whitespace=True, names=letters)
+    test_df = test_df.set_index(keys=test_id['Index'], drop=True)
+    train_id = pd.read_csv(y_train, names=['Index'])
+    train_df = pd.read_csv(x_train, delim_whitespace=True, names=letters)
+    train_df = train_df.set_index(keys=train_id['Index'], drop=True)
+    activity_df = test_df.append(train_df)
+    activity_df = activity_df.loc[:, ['aa','ab','ac','Yh', 'Yi', 'Yj']]
+    print(activity_df)
+    data_info = estimate_cov_mu(data=activity_df)
+    print(data_info)
+    plot_subset(data=activity_df, subset=['aa', 'ab', 'ac'])
+    plot_subset(data=activity_df, subset=['Yh', 'Yi', 'Yj'])
+    activity_df = make_decisions(data=activity_df, data_info=data_info)
+    print(activity_df)
+    write_sample_data(activity_df, './activity_data.csv')
+    plot_correct_classified(data=activity_df, subset=['aa', 'ab', 'ac'])
+    plot_correct_classified(data=activity_df, subset=['Yh', 'Yi', 'Yj'])
+    plot_decision_matrix(data=activity_df, save_path='./activity_decision_matrix.pdf')

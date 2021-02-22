@@ -196,6 +196,7 @@ def risk(i , x , loss_matrix, sample_info):
         if(i==j):
             continue
         #print(loss_matrix[i][j])
+        print(multivariate_normal.pdf(x,row['mu'],row['cov']))
         risk = risk + loss_matrix[i][j]*row['P']*multivariate_normal.pdf(x,row['mu'],row['cov'])
         #print(risk)
     return risk
@@ -380,7 +381,7 @@ if __name__=='__main__':
     #samples = generate_data(mu_1, mu_2, mu_3a, mu_3b, cov_1, cov_2, cov_3a, cov_3b, cp_1, cp_2, cp_3)
     #write_sample_data(samples, samples_path)
     #plot_samples(samples_path, save_path='samples_scatterplot_a.pdf')
-    #samples = make_decisions(samples, sample_info)
+    samples = make_decisions(samples_path, sample_info)
     #write_sample_data(samples, samples_path)
     #plot_classified_samples(samples_path, save_path='samples_classified_scatterplot.pdf')
     #plot_correct_classified_samples(samples_path, save_path='samples_correct_classified_scatterplot.pdf')
@@ -394,6 +395,6 @@ if __name__=='__main__':
     #write_sample_data(samples_100, samples_b_100)
     #plot_classified_samples(samples_b_100, save_path='samples_classified_scatterplot_100.pdf')
     #plot_correct_classified_samples(samples_b_100, save_path='samples_correct_classified_scatterplot_100.pdf')
-    plot_decision_matrix(samples_path, save_path='./decision_matrix.pdf')
-    plot_decision_matrix(samples_b_10, save_path='./decision_matrix_10.pdf')
-    plot_decision_matrix(samples_b_100, save_path='./decision_matrix_100.pdf')
+    #plot_decision_matrix(samples_path, save_path='./decision_matrix.pdf')
+    #plot_decision_matrix(samples_b_10, save_path='./decision_matrix_10.pdf')
+    #plot_decision_matrix(samples_b_100, save_path='./decision_matrix_100.pdf')
