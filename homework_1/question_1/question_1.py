@@ -194,7 +194,7 @@ def implement_classifier_and_plot_roc_curve(samples_path, mean_0, mean_1, cov_0,
     print('Experimental Mimimum Error Info:\n')
     print(exp_min)
     # Calculate theorectical error
-    thy_gamma = 0.3/0.7
+    thy_gamma = 0.7/0.3
     thy_lambdas = [len([class_dis for class_dis in dis_0 if class_dis>=thy_gamma])/len(dis_0),
                 len([class_dis for class_dis in dis_1 if class_dis>=thy_gamma])/len(dis_1)]
     thy_p_err = thy_lambdas[0]*0.7 + (1-thy_lambdas[1])*0.3
