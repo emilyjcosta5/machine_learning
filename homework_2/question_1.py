@@ -104,7 +104,6 @@ if __name__=='__main__':
             fx.append(w[0]+w[2]*x+w[4]*x**2+w[6]*x**3)
         fx = np.squeeze(fx)
         axes[1,1].plot(x_1,fx)
-
     axes[0,0].set_ylabel('MLE')
     axes[1,0].set_ylabel('MAP')
     axes[1,0].set_xlabel('Validate, (x_1,y)')

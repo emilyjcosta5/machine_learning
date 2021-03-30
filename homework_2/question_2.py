@@ -305,10 +305,173 @@ def plot_classified_labels(samples, ws_20, ws_200, ws_2000):
     fig.text(0.5, 0.01, 'X', va='center', ha='center')
     fig.text(0.01, 0.5, 'Y', va='center', ha='center', rotation=90)
     fig.text(0.5, 0.97, 'Training Data Set Size', va='center', ha='center')
-    axes[0].seTheoretically Optimal Classifiert_title('N=20')
+    axes[0].set_title('N=20')
     axes[1].set_title('N=200')
     axes[2].set_title('N=2000')
-    plt.savefig('./q2_p2.pdf')
+    plt.savefig('./q2_p2a.pdf')
+
+def mle_decisions_quadratic(samples, ws_20, ws_200, ws_2000):
+    # For 20 samples
+    w_0 = ws_20[0,0]
+    w_1 = ws_20[0,1]
+    w_2 = ws_20[0,2]
+    w_3 = ws_20[0,3]
+    w_4 = ws_20[0,4]
+    decisions = []
+    for idx, row in samples.iterrows():
+        x = row['x']
+        y = row['y']
+        prediction = w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4
+        if(prediction<y):
+            decisions.append(2)
+        else:
+            decisions.append(1)
+    samples['Decision, 20'] = decisions
+    # For 200 samples
+    w_0 = ws_200[0,0]
+    w_1 = ws_200[0,1]
+    w_2 = ws_200[0,2]
+    w_3 = ws_200[0,3]
+    w_4 = ws_200[0,4]
+    decisions = []
+    for idx, row in samples.iterrows():
+        x = row['x']
+        y = row['y']
+        prediction = w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4
+        if(prediction<y):
+            decisions.append(2)
+        else:
+            decisions.append(1)
+    samples['Decision, 200'] = decisions
+    # For 2000 samples
+    w_0 = ws_2000[0,0]
+    w_1 = ws_2000[0,1]
+    w_2 = ws_2000[0,2]
+    w_3 = ws_2000[0,3]
+    w_4 = ws_2000[0,4]
+    decisions = []
+    for idx, row in samples.iterrows():
+        x = row['x']
+        y = row['y']
+        prediction = w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4
+        if(prediction<y):
+            decisions.append(2)
+        else:
+            decisions.append(1)
+    samples['Decision, 2000'] = decisions
+    return samples
+
+def plot_classified_labels_quadratic(samples, ws_20, ws_200, ws_2000):
+    fig, axes = plt.subplots(1,3, sharey=True, sharex=True, figsize=(9,4))
+    min_x = floor(samples['x'].min())
+    max_x = ceil(samples['x'].max())
+    x_span = np.linspace(min_x, max_x, num=1000)
+    # Plot with 20 sample mle
+    w_0 = ws_20[0,0]
+    w_1 = ws_20[0,1]
+    w_2 = ws_20[0,2]
+    w_3 = ws_20[0,3]
+    w_4 = ws_20[0,4]
+    axes[0].set_xlim(min_x, max_x)
+    incorrect = 0
+    for idx, row in samples.iterrows():
+        true_label = row['True Class Label']
+        decision   = row['Decision, 20']
+        x = row['x']
+        y = row['y']
+        if(true_label==1):
+            if(true_label==decision):
+                axes[0].plot(x,y,'go', alpha=0.1)
+            else:
+                axes[0].plot(x,y,'ro', alpha=0.1)
+                incorrect = incorrect + 1
+        else:
+            if(true_label==decision):
+                axes[0].plot(x,y,'g^', alpha=0.1)
+            else:
+                axes[0].plot(x,y,'r^', alpha=0.1)
+                incorrect = incorrect + 1
+    p_err_20 = incorrect/samples.shape[0]
+    print(p_err_20)
+    fx = []
+    for i in range(len(x_span)):
+        x = x_span[i]
+        fx.append(w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4)
+    fx = np.squeeze(fx)
+    axes[0].plot(x_span,fx)
+    # Plot with 200 sample mle
+    w_0 = ws_200[0,0]
+    w_1 = ws_200[0,1]
+    w_2 = ws_200[0,2]
+    w_3 = ws_200[0,3]
+    w_4 = ws_200[0,4]
+    incorrect = 0
+    for idx, row in samples.iterrows():
+        true_label = row['True Class Label']
+        decision   = row['Decision, 200']
+        x = row['x']
+        y = row['y']
+        if(true_label==1):
+            if(true_label==decision):
+                axes[1].plot(x,y,'go', alpha=0.1)
+            else:
+                axes[1].plot(x,y,'ro', alpha=0.1)
+                incorrect = incorrect + 1
+        else:
+            if(true_label==decision):
+                axes[1].plot(x,y,'g^', alpha=0.1)
+            else:
+                axes[1].plot(x,y,'r^', alpha=0.1)
+                incorrect = incorrect + 1
+    p_err_200 = incorrect/samples.shape[0]
+    print(p_err_200)
+    fx = []
+    for i in range(len(x_span)):
+        x = x_span[i]
+        fx.append(w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4)
+    fx = np.squeeze(fx)
+    axes[1].plot(x_span,fx)
+    # Plot with 2000 sample mle
+    w_0 = ws_2000[0,0]
+    w_1 = ws_2000[0,1]
+    w_2 = ws_2000[0,2]
+    w_3 = ws_2000[0,3]
+    w_4 = ws_2000[0,4]
+    incorrect = 0
+    for idx, row in samples.iterrows():
+        true_label = row['True Class Label']
+        decision   = row['Decision, 2000']
+        x = row['x']
+        y = row['y']
+        if(true_label==1):
+            if(true_label==decision):
+                axes[2].plot(x,y,'go', alpha=0.1)
+            else:
+                axes[2].plot(x,y,'ro', alpha=0.1)
+                incorrect = incorrect + 1
+        else:
+            if(true_label==decision):
+                axes[2].plot(x,y,'g^', alpha=0.1)
+            else:
+                axes[2].plot(x,y,'r^', alpha=0.1)
+                incorrect = incorrect + 1
+    p_err_2000 = incorrect/samples.shape[0]
+    print(p_err_2000)
+    fx = []
+    for i in range(len(x_span)):
+        x = x_span[i]
+        fx.append(w_0+w_1*x+w_2*x**2+w_3*x**3+w_4*x**4)
+    fx = np.squeeze(fx)
+    axes[2].plot(x_span,fx)
+    fig.subplots_adjust(left=0.04, right=0.98, top=.89, bottom=0.10, wspace=0.05)
+    fig.text(0.5, 0.01, 'X', va='center', ha='center')
+    fig.text(0.01, 0.5, 'Y', va='center', ha='center', rotation=90)
+    fig.text(0.5, 0.97, 'Training Data Set Size', va='center', ha='center')
+    axes[0].set_title('N=20')
+    axes[1].set_title('N=200')
+    axes[2].set_title('N=2000')
+    axes[0].set_ylim(-4,8)
+    plt.savefig('./q2_p2b.pdf')
 
 if __name__=='__main__':
     priors = [.325,.325,.35]
@@ -324,11 +487,11 @@ if __name__=='__main__':
     train_2000 = generate_data(mus, covs, priors, 2000)
     # Generate validation data set
     test = generate_data(mus, covs, priors, 10000)
-
+    '''
     # Part 1
-    #implement_classifier_and_plots(test, mus, covs, priors)
+    implement_classifier_and_plots(test, mus, covs, priors)
 
-    # Part 2
+    # Part 2a
     # Train with 20 samples
     phi = []
     N = len(train_20)
@@ -360,3 +523,38 @@ if __name__=='__main__':
     mle_decisions(test, ws_20, ws_200, ws_2000)
     # Plot
     plot_classified_labels(test, ws_20, ws_200, ws_2000)
+    '''
+    # Part 2b
+    phi = []
+    N = len(train_20)
+    for i in range(0,N,1):
+        row = [1, train_20['x'].tolist()[i], train_20['x'].tolist()[i]**2,
+                train_20['x'].tolist()[i]**3, train_20['x'].tolist()[i]**4]
+        phi.append(row)
+    phi = np.matrix(phi)
+    t = train_20['y'].tolist()
+    ws_20 = mle(phi, t) # gives the coefficients of linear regression
+    # Train with 200 samples
+    phi = []
+    N = len(train_200)
+    for i in range(0,N,1):
+        row = [1, train_200['x'].tolist()[i], train_200['x'].tolist()[i]**2,
+                train_200['x'].tolist()[i]**3, train_200['x'].tolist()[i]**4]
+        phi.append(row)
+    phi = np.matrix(phi)
+    t = train_200['y'].tolist()
+    ws_200 = mle(phi, t) 
+    # Train with 200 samples
+    phi = []
+    N = len(train_2000)
+    for i in range(0,N,1):
+        row = [1, train_2000['x'].tolist()[i], train_2000['x'].tolist()[i]**2,
+                train_2000['x'].tolist()[i]**3, train_2000['x'].tolist()[i]**4]
+        phi.append(row)
+    phi = np.matrix(phi)
+    t = train_2000['y'].tolist()
+    ws_2000 = mle(phi, t)
+    # Make decisions
+    mle_decisions_quadratic(test, ws_20, ws_200, ws_2000)
+    # Plot
+    plot_classified_labels_quadratic(test, ws_20, ws_200, ws_2000)
