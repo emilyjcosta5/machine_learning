@@ -161,7 +161,6 @@ def plot_model_results(data):
                 correct = correct + 1
             else:
                 ax.plot(x,y,'r^', alpha=0.1)
-
     print('Model accuracy was %.3f'%(correct/data.shape[0]))
     ax.set_ylim(-30,30)
     ax.set_xlim(-30,30)
