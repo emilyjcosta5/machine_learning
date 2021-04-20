@@ -155,8 +155,7 @@ def plot_model_results(data):
     print('Model accuracy was %.3f'%(accuracy))
     legend_elements = [Patch(facecolor='g', edgecolor='g', label='Original'),
                         Patch(facecolor='b', edgecolor='b', label='Predicted')]
-    legend1 = ax.legend(handles=legend_elements, title='Value', loc='upper right')
-    #ax.add_artist(legend0)
+    ax.legend(handles=legend_elements, title='Value', loc='upper right')
     ax.set_xlabel('x0')
     ax.set_ylabel('x1')
     ax.set_zlabel('y')
@@ -169,24 +168,14 @@ if __name__=='__main__':
     x_train, y_train, x_test, y_test = generate_data()
     train = pd.DataFrame({'x0':x_train[0],'x1':x_train[1],'y':y_train})
     test = pd.DataFrame({'x0':x_test[0],'x1':x_test[1],'y':y_test})
-    #print(test['y'].unique().tolist())
-    '''
-    phi = []
-    for i, row in train.iterrows():
-        r = [1, row['x0'], row['x1'], row['x0']**2, 
-                row['x1']**2, row['x0']**3, row['x1']**3]
-        phi.append(r)
-    phi = np.matrix(phi)
-    '''
-    '''
+
     results = cross_validation(train, k=10)
     results.to_csv('./q1_cv_results.csv')
-    '''
-    #df = pd.read_csv('./q1_cv_results.csv', index_col=0)
-    #df = df.sort_values(by='Mean Squared Error').iloc[0]
-    #p = df['Number of Perceptrons']
-    results = test_hyperparameters(train, test, 10)
+
+    df = pd.read_csv('./q1_cv_results.csv', index_col=0)
+    df = df.sort_values(by='Mean Squared Error').iloc[0]
+    p = df['Number of Perceptrons']
+    results = test_hyperparameters(train, test, p)
     results.to_csv('q1_classified_results.csv')
-    accuracy = plot_model_results(results)
-    print(accuracy)
+    plot_model_results(results)
     
